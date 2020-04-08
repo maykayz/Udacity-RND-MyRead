@@ -1,71 +1,83 @@
 import React from 'react'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
-import BookShelf from './components/bookshelf.jsx'
 import { Link,Route } from 'react-router-dom'
-import Search from './components/search.jsx'
+import BookShelf from './bookshelf.jsx'
+import Search from './search.jsx'
+
 
 class BooksApp extends React.Component {
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
     books: [],
-    showSearchPage: false
-  }
-
-  componentDidMount() {
-    BooksAPI.getAll().then(res => {
-
-      this.setState((state) => ({
-        books: res
-      }));
-      console.log(this.state.books)
-    })
-  }
+    showSearchPage: false,
+    shelves: [
+        {
+          title: 'Currently Reading',
+          keyword: 'currentlyReading'
+        },
+        {
+          title: 'Want To Read',
+          keyword: 'wantToRead'
+        },
+        {
+          title: 'Read',
+          keyword: 'read'
+        },
+      ]
+    }
+    componentDidMount() {
+      BooksAPI.getAll().then(res => {
+        this.setState((state) => ({
+          books: res
+        }));
+      })
+    }
 
     handleChange = (e,changedBook) => {
-      console.log('handle change in App to'+changedBook.id);
       var allbooks = this.state.books
-      allbooks.filter(book => book.id == changedBook.id).map(filteredBook => {
+      allbooks.filter(book => book.id === changedBook.id).map(filteredBook =>() => {
         filteredBook.shelf = changedBook.shelf
       })
       this.setState((state) => ({
         books: allbooks
       }));
     }
+    refetchData = (e) => {
+      BooksAPI.getAll().then(res => {
+        this.setState((state) => ({
+          books: res
+        }));
+      })
+    }
 
   render() {
     return (
       <div className="app">
-
-      <Route path="/search" exact render={() => (
-        <Search handleChange={(e,changedBook) => this.handleChange(e,changedBook)}>
-        </Search>
-      )}/>
-
-      <Route path="/" exact
-        render={() => (
-          <div className="list-books">
-            <div className="list-books-title">
-              <h1>MyReads</h1>
-            </div>
-            <div className="list-books-content">
-              <div>
-                <BookShelf handleChange={(e,changedBook) => this.handleChange(e,changedBook)} title="Currently Reading" booklist={this.state.books.filter((book) => book.shelf=="currentlyReading")}></BookShelf>
-                <BookShelf handleChange={(e,changedBook) => this.handleChange(e,changedBook)} title="Want To Read" booklist={this.state.books.filter((book) => book.shelf=="wantToRead")}></BookShelf>
-                <BookShelf handleChange={(e,changedBook) => this.handleChange(e,changedBook)} title="Read" booklist={this.state.books.filter((book) => book.shelf=="read")}></BookShelf>
+        <Route path="/search" exact render={() => (
+          <Search handleChange={(e,changedBook) => this.handleChange(e,changedBook)} refetchData={(e) => this.refetchData(e)}>
+          </Search>
+        )}/>
+        <Route path="/" exact
+          render={() => (
+            <div className="list-books">
+              <div className="list-books-title">
+                <h1>MyReads</h1>
+              </div>
+              <div className="list-books-content">
+                <div>
+                {
+                  this.state.shelves.map(shelf => (
+                    <BookShelf key={shelf.keyword} handleChange={(e,changedBook) => this.handleChange(e,changedBook)} title={shelf.title} booklist={this.state.books.filter((book) => book.shelf=== shelf.keyword)}></BookShelf>
+                  ))
+                }
+                </div>
+              </div>
+              <div className="open-search">
+                <Link to="/search"><button>Search A Book</button></Link>
               </div>
             </div>
-            <div className="open-search">
-              <Link to="/search"><button>Search A Book</button></Link>
-            </div>
-          </div>
-        )}
-      />
+          )}
+        />
       </div>
     )
   }

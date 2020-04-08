@@ -1,12 +1,11 @@
 import React, {Component} from 'react'
-import '../App.css'
+import './App.css'
 import PropTypes from 'prop-types'
 import Book from './book.jsx'
 
 class BookShelf extends Component{
 
   handleChange = (e,changedBook) => {
-    console.log('handle change in bookshelf to'+e.target.value);
     this.props.handleChange(e,changedBook)
   }
 
@@ -19,9 +18,9 @@ class BookShelf extends Component{
         <div className="bookshelf-books">
           <ol className="books-grid">
             {
-              booklist.map((filteredBook,id) => (
-                <li>
-                  <Book key={id} filteredBook={filteredBook} handleChange={(e,changedBook) => this.handleChange(e,changedBook)}></Book>
+              booklist.map((filteredBook,index) => (
+                <li key={index}>
+                  <Book filteredBook={filteredBook} handleChange={(e,changedBook) => this.handleChange(e,changedBook)}></Book>
                 </li>
               ))
             }

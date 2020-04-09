@@ -1,52 +1,45 @@
 import React from 'react'
-import * as BooksAPI from './BooksAPI'
-import './App.css'
 import { Link,Route } from 'react-router-dom'
-import BookShelf from './bookshelf.jsx'
-import Search from './search.jsx'
+import * as BooksAPI from './BooksAPI'
+import BookShelf from './bookshelf.js'
+import Search from './search.js'
+import './App.css'
 
+const shelves = [
+    {
+      title: 'Currently Reading',
+      keyword: 'currentlyReading'
+    },
+    {
+      title: 'Want To Read',
+      keyword: 'wantToRead'
+    },
+    {
+      title: 'Read',
+      keyword: 'read'
+    },
+  ]
 
 class BooksApp extends React.Component {
   state = {
-    books: [],
-    showSearchPage: false,
-    shelves: [
-        {
-          title: 'Currently Reading',
-          keyword: 'currentlyReading'
-        },
-        {
-          title: 'Want To Read',
-          keyword: 'wantToRead'
-        },
-        {
-          title: 'Read',
-          keyword: 'read'
-        },
-      ]
+    books: []
     }
     componentDidMount() {
       BooksAPI.getAll().then(res => {
-        this.setState((state) => ({
-          books: res
-        }));
+        this.setState({books: res});
       })
     }
 
     handleChange = (e,changedBook) => {
-      var allbooks = this.state.books
-      allbooks.filter(book => book.id === changedBook.id).map(filteredBook =>() => {
+      let allbooks = this.state.books
+      allbooks.filter(book => book.id === changedBook.id).map(filteredBook =>
         filteredBook.shelf = changedBook.shelf
-      })
-      this.setState((state) => ({
-        books: allbooks
-      }));
+      )
+      this.setState({books: allbooks});
     }
     refetchData = (e) => {
       BooksAPI.getAll().then(res => {
-        this.setState((state) => ({
-          books: res
-        }));
+        this.setState({books: res});
       })
     }
 
@@ -54,9 +47,12 @@ class BooksApp extends React.Component {
     return (
       <div className="app">
         <Route path="/search" exact render={() => (
-          <Search handleChange={(e,changedBook) => this.handleChange(e,changedBook)} refetchData={(e) => this.refetchData(e)}>
-          </Search>
-        )}/>
+            <Search
+              handleChange={(e,changedBook) => this.handleChange(e,changedBook)}
+              refetchData={(e) => this.refetchData(e)}
+            />
+          )}
+        />
         <Route path="/" exact
           render={() => (
             <div className="list-books">
@@ -66,8 +62,13 @@ class BooksApp extends React.Component {
               <div className="list-books-content">
                 <div>
                 {
-                  this.state.shelves.map(shelf => (
-                    <BookShelf key={shelf.keyword} handleChange={(e,changedBook) => this.handleChange(e,changedBook)} title={shelf.title} booklist={this.state.books.filter((book) => book.shelf=== shelf.keyword)}></BookShelf>
+                  shelves.map(shelf => (
+                    <BookShelf
+                      key={shelf.keyword}
+                      handleChange={(e,changedBook) => this.handleChange(e,changedBook)}
+                      title={shelf.title}
+                      booklist={this.state.books.filter((book) => book.shelf=== shelf.keyword)}
+                    />
                   ))
                 }
                 </div>

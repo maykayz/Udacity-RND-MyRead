@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
-import './App.css'
-import * as BooksAPI from './BooksAPI'
 import { Link } from 'react-router-dom'
-import Book from './book.jsx'
-
+import * as BooksAPI from './BooksAPI'
+import Book from './book.js'
+import './App.css'
 
 const location = {
   pathname: '/',
@@ -19,17 +18,26 @@ class Search extends Component {
 
     componentDidMount() {
       BooksAPI.getAll().then(res => {
-        this.setState((state) => ({
-          books: res
-        }));
+        this.setState({books: res});
       })
     }
 
     searchBook = (e) => {
+      let mybooks = this.state.books
+      let myfilterbooks = []
       BooksAPI.search(e.target.value).then(res => {
-        this.setState((state) => ({
-          filteredBook: res
-        }));
+        if(res.length){
+          myfilterbooks = res
+          myfilterbooks.map(book => {
+            return mybooks.filter(mybook => {
+              if(mybook.id === book.id){
+                book.shelf = mybook.shelf
+              }
+              return mybooks.id === book.id
+            })
+          })
+          this.setState({filteredBook: myfilterbooks});
+        }
       })
     }
 
@@ -38,7 +46,7 @@ class Search extends Component {
     }
 
     render() {
-      var filteredBook = this.state.filteredBook
+      let filteredBook = this.state.filteredBook
       return (
           <div className="search-books">
             <div className="search-books-bar">

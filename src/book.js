@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-import './App.css'
 import PropTypes from 'prop-types'
 import {update} from './BooksAPI.js'
+import './App.css'
 
 class Book extends Component {
 

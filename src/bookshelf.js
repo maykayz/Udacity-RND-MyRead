@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-import './App.css'
 import PropTypes from 'prop-types'
-import Book from './book.jsx'
+import Book from './book.js'
+import './App.css'
 
 class BookShelf extends Component{
 
